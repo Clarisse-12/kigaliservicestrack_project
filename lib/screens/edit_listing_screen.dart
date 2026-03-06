@@ -1,0 +1,419 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../models/listing_model.dart';
+import '../providers/listing_provider.dart';
+
+class EditListingScreen extends StatefulWidget {
+  final String listingId;
+
+  const EditListingScreen({Key? key, required this.listingId})
+    : super(key: key);
+
+  @override
+  State<EditListingScreen> createState() => _EditListingScreenState();
+}
+
+class _EditListingScreenState extends State<EditListingScreen> {
+  late TextEditingController _nameController;
+  late TextEditingController _addressController;
+  late TextEditingController _contactController;
+  late TextEditingController _descriptionController;
+  late TextEditingController _latitudeController;
+  late TextEditingController _longitudeController;
+
+  String _selectedCategory = listingCategories.first;
+  late Future<Listing?> _listingFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController();
+    _addressController = TextEditingController();
+    _contactController = TextEditingController();
+    _descriptionController = TextEditingController();
+    _latitudeController = TextEditingController();
+    _longitudeController = TextEditingController();
+
+    _listingFuture = context.read<ListingProvider>().getListing(
+      widget.listingId,
+    );
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _addressController.dispose();
+    _contactController.dispose();
+    _descriptionController.dispose();
+    _latitudeController.dispose();
+    _longitudeController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Listing?>(
+      future: _listingFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: const Color(0xFF1F3A93),
+              title: const Text('Edit Listing'),
+            ),
+            body: const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF1F3A93)),
+              ),
+            ),
+          );
+        }
+
+        if (!snapshot.hasData || snapshot.data == null) {
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: const Color(0xFF1F3A93),
+              title: const Text('Edit Listing'),
+            ),
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.error_outline, size: 64, color: Colors.grey[400]),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Listing not found',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.grey[600],
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        final listing = snapshot.data!;
+
+        // Initialize fields only once
+        if (_nameController.text.isEmpty) {
+          _nameController.text = listing.name;
+          _addressController.text = listing.address;
+          _contactController.text = listing.contactNumber;
+          _descriptionController.text = listing.description;
+          _latitudeController.text = listing.latitude.toString();
+          _longitudeController.text = listing.longitude.toString();
+          _selectedCategory = listing.category;
+        }
+
+        return Scaffold(
+          backgroundColor: const Color(0xFFF5F5F5),
+          appBar: AppBar(
+            title: const Text('Edit Listing'),
+            backgroundColor: const Color(0xFF1F3A93),
+            elevation: 0,
+          ),
+          body: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Name Field
+                  _buildTextField(
+                    label: 'Service Name',
+                    controller: _nameController,
+                    hint: 'Enter service or place name',
+                    icon: Icons.business,
+                  ),
+                  const SizedBox(height: 20),
+                  // Category Dropdown
+                  _buildCategoryDropdown(),
+                  const SizedBox(height: 20),
+                  // Address Field
+                  _buildTextField(
+                    label: 'Address',
+                    controller: _addressController,
+                    hint: 'Enter full address',
+                    icon: Icons.location_on,
+                    maxLines: 3,
+                  ),
+                  const SizedBox(height: 20),
+                  // Contact Number Field
+                  _buildTextField(
+                    label: 'Contact Number',
+                    controller: _contactController,
+                    hint: 'Enter phone number',
+                    icon: Icons.phone,
+                  ),
+                  const SizedBox(height: 20),
+                  // Description Field
+                  _buildTextField(
+                    label: 'Description',
+                    controller: _descriptionController,
+                    hint: 'Enter detailed description',
+                    icon: Icons.description,
+                    maxLines: 4,
+                  ),
+                  const SizedBox(height: 20),
+                  // Coordinates Section
+                  Text(
+                    'Geographic Coordinates',
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF1F3A93),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildTextField(
+                          label: 'Latitude',
+                          controller: _latitudeController,
+                          hint: '-1.9536',
+                          icon: Icons.public,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _buildTextField(
+                          label: 'Longitude',
+                          controller: _longitudeController,
+                          hint: '29.8739',
+                          icon: Icons.public,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 30),
+                  //Error message
+                  Consumer<ListingProvider>(
+                    builder: (context, listingProvider, _) {
+                      if (listingProvider.error != null) {
+                        return Container(
+                          padding: const EdgeInsets.all(12),
+                          margin: const EdgeInsets.only(bottom: 20),
+                          decoration: BoxDecoration(
+                            color: Colors.red[50],
+                            border: Border.all(color: Colors.red[300]!),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            listingProvider.error!,
+                            style: TextStyle(
+                              color: Colors.red[800],
+                              fontSize: 12,
+                            ),
+                          ),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  ),
+                  // Save Button
+                  Consumer<ListingProvider>(
+                    builder: (context, listingProvider, _) {
+                      return SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: ElevatedButton(
+                          onPressed: listingProvider.isLoading
+                              ? null
+                              : () {
+                                  _updateListing(context, listing);
+                                },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF1F3A93),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: listingProvider.isLoading
+                              ? const SizedBox(
+                                  height: 24,
+                                  width: 24,
+                                  child: CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white,
+                                    ),
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Text(
+                                  'Save Changes',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildTextField({
+    required String label,
+    required TextEditingController controller,
+    required String hint,
+    required IconData icon,
+    int maxLines = 1,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF1F3A93),
+            fontSize: 14,
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: controller,
+          maxLines: maxLines,
+          decoration: InputDecoration(
+            hintText: hint,
+            prefixIcon: Icon(icon, color: const Color(0xFF1F3A93)),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Colors.grey),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey[300]!),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFF1F3A93), width: 2),
+            ),
+            filled: true,
+            fillColor: Colors.white,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCategoryDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Category',
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            color: Color(0xFF1F3A93),
+            fontSize: 14,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: Colors.grey[300]!),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: DropdownButton<String>(
+            value: _selectedCategory,
+            isExpanded: true,
+            underline: const SizedBox.shrink(),
+            onChanged: (String? value) {
+              setState(() {
+                _selectedCategory = value ?? listingCategories.first;
+              });
+            },
+            items: listingCategories.map<DropdownMenuItem<String>>((
+              String value,
+            ) {
+              return DropdownMenuItem<String>(value: value, child: Text(value));
+            }).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _updateListing(BuildContext context, Listing listing) {
+    if (!_validateInputs()) {
+      return;
+    }
+
+    final listingProvider = context.read<ListingProvider>();
+
+    listingProvider.updateListing(
+      id: widget.listingId,
+      name: _nameController.text,
+      category: _selectedCategory,
+      address: _addressController.text,
+      contactNumber: _contactController.text,
+      description: _descriptionController.text,
+      latitude: double.parse(_latitudeController.text),
+      longitude: double.parse(_longitudeController.text),
+      createdBy: listing.createdBy,
+    );
+
+    Future.delayed(const Duration(milliseconds: 1000), () {
+      if (context.mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Listing updated successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    });
+  }
+
+  bool _validateInputs() {
+    if (_nameController.text.isEmpty ||
+        _addressController.text.isEmpty ||
+        _contactController.text.isEmpty ||
+        _descriptionController.text.isEmpty ||
+        _latitudeController.text.isEmpty ||
+        _longitudeController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please fill in all fields'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return false;
+    }
+
+    try {
+      double.parse(_latitudeController.text);
+      double.parse(_longitudeController.text);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter valid coordinates'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return false;
+    }
+
+    return true;
+  }
+}
