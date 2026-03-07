@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/listing_model.dart';
 import '../providers/listing_provider.dart';
+import 'map_screen.dart';
 
 class DetailScreen extends StatefulWidget {
   final String listingId;
@@ -13,7 +15,6 @@ class DetailScreen extends StatefulWidget {
   @override
   State<DetailScreen> createState() => _DetailScreenState();
 }
-
 class _DetailScreenState extends State<DetailScreen> {
   late Future<Listing?> _listingFuture;
 
@@ -24,7 +25,6 @@ class _DetailScreenState extends State<DetailScreen> {
       widget.listingId,
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -304,21 +304,21 @@ class _DetailScreenState extends State<DetailScreen> {
                         ),
                         const SizedBox(height: 20),
                         // Direction Button
-                        SizedBox(
-                          width: double.infinity,
-                          height: 52,
-                          child: ElevatedButton(
+                          ElevatedButton(
                             onPressed: () {
-                              _launchNavigation(
-                                listing.latitude,
-                                listing.longitude,
+                              // Navigate to MapScreen with listing location
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => MapScreen(
+                                    targetLocation: LatLng(listing.latitude, listing.longitude),
+                                  ),
+                                ),
                               );
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF1F3A93),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                             ),
                             child: const Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -327,16 +327,11 @@ class _DetailScreenState extends State<DetailScreen> {
                                 SizedBox(width: 8),
                                 Text(
                                   'Get Directions',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white,
-                                  ),
+                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
                                 ),
                               ],
                             ),
-                          ),
-                        ),
+                          )
                         const SizedBox(height: 20),
                         // Additional Details
                         Card(
@@ -385,7 +380,6 @@ class _DetailScreenState extends State<DetailScreen> {
       ),
     );
   }
-
   Widget _buildDetailRow(String label, String value) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -405,7 +399,6 @@ class _DetailScreenState extends State<DetailScreen> {
       ],
     );
   }
-
   void _launchPhone(String phoneNumber) async {
     final url = 'tel:$phoneNumber';
     if (await canLaunch(url)) {
@@ -421,7 +414,6 @@ class _DetailScreenState extends State<DetailScreen> {
       }
     }
   }
-
   void _launchNavigation(double latitude, double longitude) async {
     final url =
         'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';

@@ -17,7 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _screens = [
     const DirectoryScreen(),
     const MyListingsScreen(),
-    const MapScreen(),
+    const MapScreen(targetLocation: null,),
     const SettingsScreen(),
   ];
 

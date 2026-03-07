@@ -174,6 +174,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         title: 'Privacy Policy',
                         icon: Icons.privacy_tip_outlined,
                         onTap: () {
+                          _showprivacyandpolicyDialog(context);
                           // Open privacy policy
                         },
                       ),
@@ -183,6 +184,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         title: 'Terms & Conditions',
                         icon: Icons.description_outlined,
                         onTap: () {
+                          _showtermsconditionsDialog(context);
                           // Open terms and conditions
                         },
                       ),
@@ -354,6 +356,70 @@ class _SettingsScreenState extends State<SettingsScreen> {
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: const Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+    void _showprivacyandpolicyDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Our Privacy and Policy'),
+          content: const Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Your privacy is important to us',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+              SizedBox(height: 12),
+              Text(
+                'We are committed to protecting your personal information and your right to privacy. If you have any questions or concerns about our privacy policy, please feel free to contact us.',
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('ok'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+    void _showtermsconditionsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Terms and Conditions'),
+          content: const Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Please read these terms and conditions carefully before using our application.',
+              ),
+              SizedBox(height: 12),
+              Text(
+                'By accessing or using our application, you agree to be bound by these terms and conditions. If you do not agree with any part of these terms, please do not use our application.'
+                ,
+                style: TextStyle(height: 1.5),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('ok'),
             ),
           ],
         );
