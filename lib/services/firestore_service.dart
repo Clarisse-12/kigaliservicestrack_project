@@ -4,7 +4,6 @@ import '../models/listing_model.dart';
 class FirestoreService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Create a new listing
   Future<String> createListing(Listing listing) async {
     try {
       DocumentReference docRef = await _firestore
@@ -16,7 +15,6 @@ class FirestoreService {
     }
   }
 
-  // Get all listings as a stream
   Stream<List<Listing>> getAllListings() {
     try {
       return _firestore
@@ -33,7 +31,6 @@ class FirestoreService {
     }
   }
 
-  // Get listings by user (My Listings)
   Stream<List<Listing>> getUserListings(String uid) {
     try {
       return _firestore
@@ -51,7 +48,6 @@ class FirestoreService {
     }
   }
 
-  // Get listings by category
   Stream<List<Listing>> getListingsByCategory(String category) {
     try {
       return _firestore
@@ -69,7 +65,6 @@ class FirestoreService {
     }
   }
 
-  // Search listings by name
   Stream<List<Listing>> searchListings(String query) {
     try {
       return _firestore.collection('listings').snapshots().map((snapshot) {
@@ -77,7 +72,6 @@ class FirestoreService {
             .map((doc) => Listing.fromFirestore(doc))
             .toList();
 
-        // Filter by matching name or address
         return listings
             .where(
               (listing) =>
@@ -94,7 +88,7 @@ class FirestoreService {
     }
   }
 
-  // Get a single listing by ID
+  
   Future<Listing> getListing(String id) async {
     try {
       DocumentSnapshot doc = await _firestore
@@ -110,7 +104,6 @@ class FirestoreService {
     }
   }
 
-  // Update a listing
   Future<void> updateListing({
     required String id,
     required Listing listing,
@@ -122,7 +115,7 @@ class FirestoreService {
     }
   }
 
-  // Delete a listing
+  
   Future<void> deleteListing(String id) async {
     try {
       await _firestore.collection('listings').doc(id).delete();
@@ -131,7 +124,7 @@ class FirestoreService {
     }
   }
 
-  // Get nearby listings (within radius)
+  
   Future<List<Listing>> getNearbyListings({
     required double latitude,
     required double longitude,
@@ -162,14 +155,14 @@ class FirestoreService {
     }
   }
 
-  // Calculate distance between two coordinates in km (Haversine formula)
+  
   double _calculateDistance(
     double lat1,
     double lon1,
     double lat2,
     double lon2,
   ) {
-    const double R = 6371; // Earth's radius in kilometers
+    const double R = 6371; 
 
     final double dLat = _toRad(lat2 - lat1);
     final double dLon = _toRad(lon2 - lon1);
@@ -192,7 +185,7 @@ class FirestoreService {
   }
 }
 
-// Helper class for math operations
+
 class Math {
   static double sin(double x) => _sin(x);
   static double cos(double x) => _cos(x);
@@ -212,12 +205,12 @@ class Math {
   }
 
   static double _sin(double x) {
-    // Normalize angle to [-2π, 2π]
+    
     x = x % (2 * 3.14159265359);
     if (x > 3.14159265359) x -= 2 * 3.14159265359;
     if (x < -3.14159265359) x += 2 * 3.14159265359;
 
-    // Taylor series
+    
     double result = 0;
     double term = x;
     for (int i = 1; i < 20; i++) {

@@ -13,7 +13,6 @@ class ListingProvider extends ChangeNotifier {
   String _selectedCategory = 'All';
   String _searchQuery = '';
 
-  // Getters
   List<Listing> get allListings => _allListings;
   List<Listing> get userListings => _userListings;
   List<Listing> get filteredListings =>
@@ -23,7 +22,6 @@ class ListingProvider extends ChangeNotifier {
   String get selectedCategory => _selectedCategory;
   String get searchQuery => _searchQuery;
 
-  // Subscribe to all listings
   void subscribeToAllListings() {
     _firestoreService.getAllListings().listen(
       (listings) {
@@ -38,7 +36,6 @@ class ListingProvider extends ChangeNotifier {
     );
   }
 
-  // Subscribe to user listings
   void subscribeToUserListings(String uid) {
     _firestoreService
         .getUserListings(uid)
@@ -54,7 +51,6 @@ class ListingProvider extends ChangeNotifier {
         );
   }
 
-  // Create listing
   Future<void> createListing({
     required String name,
     required String category,
@@ -93,7 +89,6 @@ class ListingProvider extends ChangeNotifier {
     }
   }
 
-  // Update listing
   Future<void> updateListing({
     required String id,
     required String name,
@@ -133,7 +128,6 @@ class ListingProvider extends ChangeNotifier {
     }
   }
 
-  // Delete listing
   Future<void> deleteListing(String id) async {
     _isLoading = true;
     _error = null;
@@ -150,7 +144,6 @@ class ListingProvider extends ChangeNotifier {
     }
   }
 
-  // Get single listing
   Future<Listing?> getListing(String id) async {
     try {
       return await _firestoreService.getListing(id);
@@ -160,7 +153,6 @@ class ListingProvider extends ChangeNotifier {
     }
   }
 
-  // Search listings
   Future<void> searchListings(String query) async {
     _searchQuery = query;
     if (query.isEmpty) {
@@ -192,25 +184,21 @@ class ListingProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Filter by category
   void filterByCategory(String category) {
     _selectedCategory = category;
     _applyFilters();
     notifyListeners();
   }
 
-  // Apply filters
   void _applyFilters() {
     _filteredListings = _allListings;
 
-    // Filter by category
     if (_selectedCategory != 'All') {
       _filteredListings = _filteredListings
           .where((listing) => listing.category == _selectedCategory)
           .toList();
     }
 
-    // Filter by search query
     if (_searchQuery.isNotEmpty) {
       _filteredListings = _filteredListings
           .where(
@@ -226,7 +214,6 @@ class ListingProvider extends ChangeNotifier {
     }
   }
 
-  // Get nearby listings
   Future<List<Listing>> getNearbyListings({
     required double latitude,
     required double longitude,
@@ -244,7 +231,6 @@ class ListingProvider extends ChangeNotifier {
     }
   }
 
-  // Clear filters
   void clearFilters() {
     _selectedCategory = 'All';
     _searchQuery = '';
@@ -252,7 +238,6 @@ class ListingProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Clear error
   void clearError() {
     _error = null;
     notifyListeners();

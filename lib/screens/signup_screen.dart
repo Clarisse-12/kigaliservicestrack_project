@@ -79,7 +79,6 @@ class _SignupScreenState extends State<SignupScreen> {
                   ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
                 ),
                 const SizedBox(height: 30),
-                // Full Name Field
                 _buildTextField(
                   controller: _nameController,
                   label: 'Full Name',
@@ -87,7 +86,6 @@ class _SignupScreenState extends State<SignupScreen> {
                   prefixIcon: Icons.person_outlined,
                 ),
                 const SizedBox(height: 20),
-                // Email Field
                 _buildTextField(
                   controller: _emailController,
                   label: 'Email',
@@ -96,7 +94,6 @@ class _SignupScreenState extends State<SignupScreen> {
                   keyboardType: TextInputType.emailAddress,
                 ),
                 const SizedBox(height: 20),
-                // Password Field
                 _buildTextField(
                   controller: _passwordController,
                   label: 'Password',
@@ -117,7 +114,6 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                // Confirm Password Field
                 _buildTextField(
                   controller: _confirmPasswordController,
                   label: 'Confirm Password',
@@ -138,7 +134,6 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                // Terms and Conditions
                 Row(
                   children: [
                     Checkbox(
@@ -159,7 +154,6 @@ class _SignupScreenState extends State<SignupScreen> {
                   ],
                 ),
                 const SizedBox(height: 20),
-                // Error message
                 Consumer<AuthProvider>(
                   builder: (context, authProvider, _) {
                     if (authProvider.error != null) {
@@ -183,7 +177,6 @@ class _SignupScreenState extends State<SignupScreen> {
                     return const SizedBox.shrink();
                   },
                 ),
-                // Sign Up Button
                 Consumer<AuthProvider>(
                   builder: (context, authProvider, _) {
                     return SizedBox(
@@ -225,7 +218,6 @@ class _SignupScreenState extends State<SignupScreen> {
                   },
                 ),
                 const SizedBox(height: 20),
-                // Sign In Link
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -296,7 +288,6 @@ class _SignupScreenState extends State<SignupScreen> {
       displayName: _nameController.text,
     );
 
-    // Show verification email sent dialog
     Future.delayed(const Duration(milliseconds: 500), () {
       if (context.mounted) {
         showDialog(

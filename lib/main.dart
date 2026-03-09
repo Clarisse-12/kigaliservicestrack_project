@@ -88,17 +88,17 @@ class _RootScreen extends StatelessWidget {
     return Consumer<AuthProvider>(
       builder: (context, authProvider, _) {
 
-        /// NOT LOGGED IN
+        
         if (authProvider.currentUser == null) {
           return const LoginScreen();
         }
 
-        /// EMAIL NOT VERIFIED
+        
         if (!authProvider.isEmailVerified) {
           return _EmailVerificationScreen();
         }
 
-        /// LOGGED IN
+        
         return const HomeScreen();
       },
     );
@@ -145,7 +145,7 @@ class _EmailVerificationScreen extends StatelessWidget {
 
             const SizedBox(height: 30),
 
-            /// CHECK VERIFICATION BUTTON
+            
             ElevatedButton(
               onPressed: () async {
 
@@ -170,7 +170,7 @@ class _EmailVerificationScreen extends StatelessWidget {
 
             const SizedBox(height: 10),
 
-            /// RESEND EMAIL
+          
             TextButton(
               onPressed: () {
                 authProvider.resendEmailVerification();
@@ -180,7 +180,7 @@ class _EmailVerificationScreen extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            /// SIGN OUT
+            
             TextButton(
               onPressed: () {
                 authProvider.signOut();
