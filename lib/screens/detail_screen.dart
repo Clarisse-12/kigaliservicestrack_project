@@ -173,12 +173,7 @@ class _DetailScreenState extends State<DetailScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => MapScreen(
-                                  targetLocation: LatLng(
-                                    listing.latitude,
-                                    listing.longitude,
-                                  ),
-                                ),
+                                builder: (_) => const MapScreen(),
                               ),
                             );
                           },

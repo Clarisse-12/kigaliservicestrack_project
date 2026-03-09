@@ -1,151 +1,124 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../providers/listing_provider.dart';
 
 class MapScreen extends StatefulWidget {
-  final LatLng targetLocation;
-
-  const MapScreen({Key? key, required this.targetLocation}) : super(key: key);
+  const MapScreen({Key? key}) : super(key: key);
 
   @override
   State<MapScreen> createState() => _MapScreenState();
 }
 
 class _MapScreenState extends State<MapScreen> {
-  LatLng? _currentLocation;
-  List<LatLng> _routePoints = [];
+  final MapController _mapController = MapController();
 
   @override
   void initState() {
     super.initState();
-
     Future.microtask(() {
       context.read<ListingProvider>().subscribeToAllListings();
     });
-
-    _getUserLocation();
   }
 
-  Future<void> _getUserLocation() async {
-    bool serviceEnabled;
-    LocationPermission permission;
+  Color _getCategoryColor(String category) {
+    switch (category) {
+      case 'Hospital': return Colors.red;
+      case 'Police Station': return Colors.blue;
+      case 'Library': return Colors.purple;
+      case 'Utility Office': return Colors.orange;
+      case 'Restaurant': return Colors.green;
+      case 'Café': return Colors.brown;
+      case 'Park': return Colors.lightGreen;
+      case 'Tourist Attraction': return Colors.pink;
+      case 'School': return Colors.yellow;
+      case 'Bank': return Colors.teal;
+      case 'Market': return Colors.deepOrange;
+      default: return Colors.grey;
+    }
+  }
 
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) return;
+  LatLngBounds? _calculateBounds(List listings) {
+    if (listings.isEmpty) return null;
+    
+    double minLat = listings.first.latitude;
+    double maxLat = listings.first.latitude;
+    double minLng = listings.first.longitude;
+    double maxLng = listings.first.longitude;
 
-    permission = await Geolocator.checkPermission();
-
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) return;
+    for (var listing in listings) {
+      if (listing.latitude < minLat) minLat = listing.latitude;
+      if (listing.latitude > maxLat) maxLat = listing.latitude;
+      if (listing.longitude < minLng) minLng = listing.longitude;
+      if (listing.longitude > maxLng) maxLng = listing.longitude;
     }
 
-    if (permission == LocationPermission.deniedForever) return;
-
-    final position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
+    return LatLngBounds(
+      LatLng(minLat, minLng),
+      LatLng(maxLat, maxLng),
     );
-
-    final userLocation = LatLng(position.latitude, position.longitude);
-
-    setState(() {
-      _currentLocation = userLocation;
-
-      // Create route line
-      _routePoints = [
-        userLocation,
-        widget.targetLocation,
-      ];
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Directions"),
+        title: const Text("All Services Map"),
         backgroundColor: const Color(0xFF1F3A93),
       ),
       body: Consumer<ListingProvider>(
         builder: (context, listingProvider, _) {
           final listings = listingProvider.allListings;
+          
+          if (listings.isEmpty) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final bounds = _calculateBounds(listings);
+          final center = LatLng(
+            (bounds!.south + bounds.north) / 2,
+            (bounds.west + bounds.east) / 2,
+          );
 
           return FlutterMap(
+            mapController: _mapController,
             options: MapOptions(
-              initialCenter: _currentLocation ?? widget.targetLocation,
-              initialZoom: 14,
+              initialCenter: center,
+              initialZoom: 12,
+              minZoom: 10,
+              maxZoom: 18,
+              onMapReady: () {
+                Future.delayed(const Duration(milliseconds: 100), () {
+                  _mapController.fitCamera(
+                    CameraFit.bounds(
+                      bounds: bounds,
+                      padding: const EdgeInsets.all(50),
+                    ),
+                  );
+                });
+              },
             ),
             children: [
-
-              /// MAP TILES
               TileLayer(
                 urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
                 userAgentPackageName: "com.example.kigaliservicestrack",
               ),
-
-              /// ROUTE LINE
-              PolylineLayer(
-                polylines: [
-                  Polyline(
-                    points: _routePoints,
-                    strokeWidth: 4,
-                    color: Colors.blue,
-                  )
-                ],
-              ),
-
-              /// LISTING MARKERS
               MarkerLayer(
                 markers: listings.map((listing) {
                   return Marker(
                     width: 40,
                     height: 40,
                     point: LatLng(listing.latitude, listing.longitude),
-                    child: const Icon(
+                    child: Icon(
                       Icons.location_on,
-                      color: Colors.red,
+                      color: _getCategoryColor(listing.category),
                       size: 40,
                     ),
                   );
                 }).toList(),
               ),
-
-              // /// TARGET MARKER
-              // MarkerLayer(
-              //   markers: [
-              //     Marker(
-              //       width: 45,
-              //       height: 45,
-              //       point: widget.targetLocation,
-              //       child: const Icon(
-              //         Icons.flag,
-              //         color: Colors.red,
-              //         size: 45,
-              //       ),
-              //     ),
-              //   ],
-              // ),
-
-              /// USER MARKER
-              if (_currentLocation != null)
-                MarkerLayer(
-                  markers: [
-                    Marker(
-                      width: 45,
-                      height: 45,
-                      point: _currentLocation!,
-                      child: const Icon(
-                        Icons.person_pin_circle,
-                        color: Colors.blue,
-                        size: 45,
-                      ),
-                    ),
-                  ],
-                ),
             ],
           );
         },
