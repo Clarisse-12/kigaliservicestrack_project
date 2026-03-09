@@ -6,7 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../models/listing_model.dart';
 import '../providers/listing_provider.dart';
-import 'map_screen.dart';
+import 'directions_map_screen.dart';
 
 class DetailScreen extends StatefulWidget {
   final String listingId;
@@ -173,7 +173,13 @@ class _DetailScreenState extends State<DetailScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => const MapScreen(),
+                                builder: (_) => DirectionsMapScreen(
+                                  targetLocation: LatLng(
+                                    listing.latitude,
+                                    listing.longitude,
+                                  ),
+                                  serviceName: listing.name,
+                                ),
                               ),
                             );
                           },
