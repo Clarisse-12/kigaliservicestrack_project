@@ -93,7 +93,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     ),
                   ),
                 ),
-
+                // 
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.all(20),
