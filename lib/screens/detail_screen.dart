@@ -225,6 +225,14 @@ class _DetailScreenState extends State<DetailScreen> {
                                   DateFormat("MMM dd, yyyy")
                                       .format(listing.timestamp),
                                 ),
+
+                                const SizedBox(height: 10),
+
+                                /// CREATED BY
+                                _buildDetailRow(
+                                  "Created By",
+                                  listing.createdBy,
+                                ),
                               ],
                             ),
                           ),

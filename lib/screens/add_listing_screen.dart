@@ -165,7 +165,7 @@ class _AddListingScreenState extends State<AddListingScreen> {
                               _addListing(context);
                             },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF1F3A93),
+                        backgroundColor: const Color.fromARGB(255, 184, 190, 209),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -176,7 +176,7 @@ class _AddListingScreenState extends State<AddListingScreen> {
                               width: 24,
                               child: CircularProgressIndicator(
                                 valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.white,
+                                  Color.fromARGB(255, 185, 24, 24),
                                 ),
                                 strokeWidth: 2,
                               ),
