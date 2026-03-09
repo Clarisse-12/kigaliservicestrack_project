@@ -9,7 +9,7 @@ class DirectoryScreen extends StatefulWidget {
   @override
   State<DirectoryScreen> createState() => _DirectoryScreenState();
 }
-// 
+
 class _DirectoryScreenState extends State<DirectoryScreen> {
   late TextEditingController _searchController;
 
