@@ -12,7 +12,7 @@ class AuthProvider extends ChangeNotifier {
   String? _error;
   bool _isEmailVerified = false;
 
-  // Getters
+  
   User? get currentUser => _currentUser;
   UserModel? get userProfile => _userProfile;
   bool get isLoading => _isLoading;
@@ -24,7 +24,6 @@ class AuthProvider extends ChangeNotifier {
     _initializeAuth();
   }
 
-  // Initialize authentication state
   void _initializeAuth() {
     _authService.authStateChanges.listen((User? user) async {
       _currentUser = user;
@@ -36,7 +35,7 @@ class AuthProvider extends ChangeNotifier {
     });
   }
 
-  // Check if email is verified
+  
   Future<void> _checkEmailVerification() async {
     if (_currentUser != null) {
       await _currentUser!.reload();
@@ -44,7 +43,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  // Load user profile from Firestore
+  
   Future<void> _loadUserProfile() async {
     try {
       if (_currentUser != null) {
@@ -56,7 +55,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  // Sign up
+ 
   Future<void> signUp({
     required String email,
     required String password,
@@ -81,7 +80,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  // Log in
+
   Future<void> logIn({required String email, required String password}) async {
     _isLoading = true;
     _error = null;
@@ -100,7 +99,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  // Resend email verification
+  
   Future<void> resendEmailVerification() async {
     _isLoading = true;
     _error = null;
@@ -117,7 +116,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  // Check email verification status
+  
   Future<void> checkEmailVerificationStatus() async {
     try {
       await _checkEmailVerification();

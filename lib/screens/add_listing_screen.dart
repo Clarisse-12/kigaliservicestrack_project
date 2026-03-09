@@ -4,7 +4,6 @@ import '../models/listing_model.dart';
 import '../providers/auth_provider.dart';
 import '../providers/listing_provider.dart';
 
-// Screen for adding a new listing with form fields and validation
 class AddListingScreen extends StatefulWidget {
   const AddListingScreen({Key? key}) : super(key: key);
 
@@ -12,7 +11,6 @@ class AddListingScreen extends StatefulWidget {
   State<AddListingScreen> createState() => _AddListingScreenState();
 }
 
-// State class for AddListingScreen, managing form controllers and submission logic
 class _AddListingScreenState extends State<AddListingScreen> {
   late TextEditingController _nameController;
   late TextEditingController _addressController;
@@ -23,7 +21,6 @@ class _AddListingScreenState extends State<AddListingScreen> {
 
   String _selectedCategory = listingCategories.first;
 
-// Initialize text controllers for form fields
   @override
   void initState() {
     super.initState();
@@ -35,7 +32,6 @@ class _AddListingScreenState extends State<AddListingScreen> {
     _longitudeController = TextEditingController();
   }
 
-// Dispose of text controllers to free resources
   @override
   void dispose() {
     _nameController.dispose();
@@ -47,7 +43,6 @@ class _AddListingScreenState extends State<AddListingScreen> {
     super.dispose();
   }
 
-// Build method to render the UI of the AddListingScreen with form fields and submission button
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,7 +58,6 @@ class _AddListingScreenState extends State<AddListingScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Service Name Field
               _buildTextField(
                 label: 'Service Name',
                 controller: _nameController,
@@ -71,10 +65,8 @@ class _AddListingScreenState extends State<AddListingScreen> {
                 icon: Icons.business,
               ),
               const SizedBox(height: 20),
-              // Category Dropdown
               _buildCategoryDropdown(),
               const SizedBox(height: 20),
-              // Address Field
               _buildTextField(
                 label: 'Address',
                 controller: _addressController,
@@ -83,7 +75,6 @@ class _AddListingScreenState extends State<AddListingScreen> {
                 maxLines: 3,
               ),
               const SizedBox(height: 20),
-              // Contact Number Field
               _buildTextField(
                 label: 'Contact Number',
                 controller: _contactController,
@@ -91,7 +82,6 @@ class _AddListingScreenState extends State<AddListingScreen> {
                 icon: Icons.phone,
               ),
               const SizedBox(height: 20),
-              // Description Field
               _buildTextField(
                 label: 'Description',
                 controller: _descriptionController,
@@ -100,7 +90,6 @@ class _AddListingScreenState extends State<AddListingScreen> {
                 maxLines: 4,
               ),
               const SizedBox(height: 20),
-              // Geographic Coordinates Section
               Text(
                 'Geographic Coordinates',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
@@ -131,7 +120,6 @@ class _AddListingScreenState extends State<AddListingScreen> {
                 ],
               ),
               const SizedBox(height: 30),
-              // Error Message Display
               Consumer<ListingProvider>(
                 builder: (context, listingProvider, _) {
                   if (listingProvider.error != null) {
@@ -152,7 +140,6 @@ class _AddListingScreenState extends State<AddListingScreen> {
                   return const SizedBox.shrink();
                 },
               ),
-              // Add Listing Button with loading state
               Consumer2<AuthProvider, ListingProvider>(
                 builder: (context, authProvider, listingProvider, _) {
                   return SizedBox(
@@ -201,7 +188,6 @@ class _AddListingScreenState extends State<AddListingScreen> {
     );
   }
 
-// Helper method to build styled text fields for the form
   Widget _buildTextField({
     required String label,
     required TextEditingController controller,
@@ -251,7 +237,6 @@ class _AddListingScreenState extends State<AddListingScreen> {
     );
   }
 
-// Helper method to build a styled dropdown for selecting listing categories
   Widget _buildCategoryDropdown() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -292,7 +277,6 @@ class _AddListingScreenState extends State<AddListingScreen> {
     );
   }
 
-// Method to handle form submission, including validation and interaction with providers
   void _addListing(BuildContext context) {
     if (!_validateInputs()) {
       return;

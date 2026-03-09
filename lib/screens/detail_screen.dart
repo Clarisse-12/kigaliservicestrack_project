@@ -49,7 +49,6 @@ class _DetailScreenState extends State<DetailScreen> {
             child: CustomScrollView(
               slivers: [
 
-                /// HEADER
                 SliverAppBar(
                   expandedHeight: 200,
                   pinned: true,
@@ -102,7 +101,6 @@ class _DetailScreenState extends State<DetailScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
 
-                        /// LOCATION CARD
                         Card(
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12)),
@@ -146,7 +144,6 @@ class _DetailScreenState extends State<DetailScreen> {
 
                         const SizedBox(height: 20),
 
-                        /// DESCRIPTION
                         const Text(
                           "Description",
                           style: TextStyle(
@@ -167,7 +164,6 @@ class _DetailScreenState extends State<DetailScreen> {
 
                         const SizedBox(height: 20),
 
-                        /// GET DIRECTIONS BUTTON
                         ElevatedButton(
                           onPressed: () {
                             Navigator.push(
@@ -205,7 +201,6 @@ class _DetailScreenState extends State<DetailScreen> {
 
                         const SizedBox(height: 20),
 
-                        /// EXTRA DETAILS
                         Card(
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12)),
