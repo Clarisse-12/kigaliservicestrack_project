@@ -152,7 +152,7 @@ class _AddListingScreenState extends State<AddListingScreen> {
                               _addListing(context);
                             },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(255, 184, 190, 209),
+                        backgroundColor: const Color.fromARGB(255, 26, 62, 179),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),

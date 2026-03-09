@@ -12,7 +12,6 @@ class AuthProvider extends ChangeNotifier {
   String? _error;
   bool _isEmailVerified = false;
 
-  
   User? get currentUser => _currentUser;
   UserModel? get userProfile => _userProfile;
   bool get isLoading => _isLoading;
@@ -27,15 +26,19 @@ class AuthProvider extends ChangeNotifier {
   void _initializeAuth() {
     _authService.authStateChanges.listen((User? user) async {
       _currentUser = user;
+
       if (user != null) {
         await _checkEmailVerification();
         await _loadUserProfile();
+      } else {
+        _userProfile = null;
+        _isEmailVerified = false;
       }
+
       notifyListeners();
     });
   }
 
-  
   Future<void> _checkEmailVerification() async {
     if (_currentUser != null) {
       await _currentUser!.reload();
@@ -43,19 +46,21 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  
   Future<void> _loadUserProfile() async {
     try {
       if (_currentUser != null) {
-        _userProfile = await _authService.getUserProfile(_currentUser!.uid);
-        notifyListeners();
+        final profile =
+            await _authService.getUserProfile(_currentUser!.uid);
+
+        if (profile != null) {
+          _userProfile = profile;
+        }
       }
     } catch (e) {
-      print('Error loading user profile: $e');
+      print("Profile loading error: $e");
     }
   }
 
- 
   Future<void> signUp({
     required String email,
     required String password,
@@ -71,7 +76,8 @@ class AuthProvider extends ChangeNotifier {
         password: password,
         displayName: displayName,
       );
-      _error = null;
+
+      _error = "Account created. Please verify your email.";
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -80,74 +86,24 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-
-  Future<void> logIn({required String email, required String password}) async {
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      await _authService.logIn(email: email, password: password);
-      await _checkEmailVerification();
-      await _loadUserProfile();
-      _error = null;
-    } catch (e) {
-      _error = e.toString();
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  
-  Future<void> resendEmailVerification() async {
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      await _authService.resendEmailVerification();
-      _error = null;
-    } catch (e) {
-      _error = e.toString();
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  
-  Future<void> checkEmailVerificationStatus() async {
-    try {
-      await _checkEmailVerification();
-      if (_isEmailVerified && _currentUser != null) {
-        await _loadUserProfile();
-      }
-      notifyListeners();
-    } catch (e) {
-      _error = e.toString();
-      notifyListeners();
-    }
-  }
-
-  // Update user profile
-  Future<void> updateUserProfile({
-    String? displayName,
-    String? photoUrl,
+  Future<void> logIn({
+    required String email,
+    required String password,
   }) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      if (_currentUser != null) {
-        await _authService.updateUserProfile(
-          uid: _currentUser!.uid,
-          displayName: displayName,
-          photoUrl: photoUrl,
-        );
+      await _authService.logIn(email: email, password: password);
+
+      await _checkEmailVerification();
+
+      if (!_isEmailVerified) {
+        _error = "Please verify your email before logging in.";
+        await _authService.signOut();
+      } else {
         await _loadUserProfile();
-        _error = null;
       }
     } catch (e) {
       _error = e.toString();
@@ -157,52 +113,54 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  // Update notification preferences
-  Future<void> updateNotificationPreference(bool enabled) async {
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
+  Future<void> resendEmailVerification() async {
     try {
-      if (_currentUser != null) {
-        await _authService.updateNotificationPreference(
-          _currentUser!.uid,
-          enabled,
-        );
-        if (_userProfile != null) {
-          _userProfile = _userProfile!.copyWith(notificationsEnabled: enabled);
-        }
-        _error = null;
-      }
+      await _authService.resendEmailVerification();
     } catch (e) {
       _error = e.toString();
-    } finally {
-      _isLoading = false;
       notifyListeners();
     }
   }
 
-  // Sign out
   Future<void> signOut() async {
     _isLoading = true;
-    _error = null;
     notifyListeners();
 
     try {
       await _authService.signOut();
+
       _currentUser = null;
       _userProfile = null;
       _isEmailVerified = false;
-      _error = null;
     } catch (e) {
       _error = e.toString();
-    } finally {
-      _isLoading = false;
+    }
+
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> updateNotificationPreference(bool enabled) async {
+    if (_currentUser == null) return;
+
+    try {
+      await _authService.updateNotificationPreference(
+        _currentUser!.uid,
+        enabled,
+      );
+
+      if (_userProfile != null) {
+        _userProfile =
+            _userProfile!.copyWith(notificationsEnabled: enabled);
+      }
+
+      notifyListeners();
+    } catch (e) {
+      _error = e.toString();
       notifyListeners();
     }
   }
 
-  // Clear error
   void clearError() {
     _error = null;
     notifyListeners();

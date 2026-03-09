@@ -38,7 +38,7 @@ class _MyListingsScreenState extends State<MyListingsScreen> {
         onPressed: () {
           Navigator.pushNamed(context, '/add-listing');
         },
-        backgroundColor: const Color(0xFF1F3A93),
+        backgroundColor: const Color.fromARGB(255, 226, 230, 243),
         child: const Icon(Icons.add),
       ),
       body: Consumer2<AuthProvider, ListingProvider>(

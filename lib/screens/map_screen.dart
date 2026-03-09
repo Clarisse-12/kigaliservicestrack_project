@@ -6,7 +6,7 @@ import 'package:latlong2/latlong.dart';
 import '../providers/listing_provider.dart';
 
 class MapScreen extends StatefulWidget {
-  const MapScreen({Key? key}) : super(key: key);
+  const MapScreen({Key? key, required LatLng targetLocation}) : super(key: key);
 
   @override
   State<MapScreen> createState() => _MapScreenState();
